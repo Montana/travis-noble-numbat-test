@@ -1,8 +1,48 @@
 dist: noble
-script: 
+script:
   - uname -r
   - psql -d test -U postgres -c "CREATE TABLE users (id SERIAL PRIMARY KEY, username VARCHAR(50) NOT NULL UNIQUE, email VARCHAR(255) NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, last_login TIMESTAMP, is_active BOOLEAN DEFAULT true);"
-  - psql -d test -U postgres -c "INSERT INTO users (username, email, created_at, last_login, is_active) VALUES ('johndoe', 'john@example.com', '2025-01-15 10:30:00', '2025-03-25 14:20:00', true), ('janedoe', 'jane@example.com', '2025-02-01 09:15:00', '2025-03-26 08:45:00', true), ('bobsmith', 'bob@example.com', '2025-01-20 14:45:00', '2025-03-20 16:30:00', false), ('alicew', 'alice@wonderland.com', '2025-02-10 11:20:00', '2025-03-24 09:10:00', true), ('peterp', 'peter@parker.net', '2025-01-05 16:00:00', '2025-03-15 13:25:00', true), ('maryj', 'mary@jane.org', '2025-02-15 08:30:00', '2025-03-26 10:15:00', true), ('tomh', 'tom@holland.com', '2025-01-25 13:40:00', '2025-03-23 15:50:00', false), ('sarahc', 'sarah@connor.net', '2025-02-20 15:15:00', '2025-03-25 11:30:00', true), ('jamesb', 'james@bond.uk', '2025-01-10 09:50:00', '2025-03-22 17:00:00', true), ('emilyr', 'emily@rose.com', '2025-02-05 12:25:00', '2025-03-26 09:35:00', true), ('davidk', 'david@king.com', '2025-01-30 14:15:00', '2025-03-25 16:45:00', true), ('lisam', 'lisa@moon.net', '2025-02-25 09:30:00', '2025-03-24 13:20:00', true), ('markz', 'mark@zulu.org', '2025-01-08 11:45:00', '2025-03-19 10:10:00', false), ('annab', 'anna@bell.com', '2025-02-12 16:20:00', '2025-03-26 11:55:00', true), ('chrisc', 'chris@cake.net', '2025-01-18 08:10:00', '2025-03-23 14:30:00', true), ('karenw', 'karen@wind.com', '2025-02-18 13:25:00', '2025-03-25 09:15:00', false), ('stevej', 'steve@jobs.org', '2025-01-22 15:50:00', '2025-03-24 17:40:00', true), ('laurar', 'laura@rain.com', '2025-02-08 10:35:00', '2025-03-26 12:25:00', true), ('mikeb', 'mike@bike.net', '2025-01-12 12:15:00', '2025-03-21 15:10:00', true), ('jennyf', 'jenny@flower.com', '2025-02-22 14:40:00', '2025-03-25 10:50:00', true);"
+  - psql -d test -U postgres -c "INSERT INTO users (username, email, created_at, last_login, is_active) VALUES 
+      ('johndoe', 'john@example.com', '2025-01-15 10:30:00', '2025-03-25 14:20:00', true),
+      ('janedoe', 'jane@example.com', '2025-02-01 09:15:00', '2025-03-26 08:45:00', true),
+      ('bobsmith', 'bob@example.com', '2025-01-20 14:45:00', '2025-03-20 16:30:00', false),
+      ('alicew', 'alice@wonderland.com', '2025-02-10 11:20:00', '2025-03-24 09:10:00', true),
+      ('peterp', 'peter@parker.net', '2025-01-05 16:00:00', '2025-03-15 13:25:00', true),
+      ('maryj', 'mary@jane.org', '2025-02-15 08:30:00', '2025-03-26 10:15:00', true),
+      ('tomh', 'tom@holland.com', '2025-01-25 13:40:00', '2025-03-23 15:50:00', false),
+      ('sarahc', 'sarah@connor.net', '2025-02-20 15:15:00', '2025-03-25 11:30:00', true),
+      ('jamesb', 'james@bond.uk', '2025-01-10 09:50:00', '2025-03-22 17:00:00', true),
+      ('emilyr', 'emily@rose.com', '2025-02-05 12:25:00', '2025-03-26 09:35:00', true),
+      ('davidk', 'david@king.com', '2025-01-30 14:15:00', '2025-03-25 16:45:00', true),
+      ('lisam', 'lisa@moon.net', '2025-02-25 09:30:00', '2025-03-24 13:20:00', true),
+      ('markz', 'mark@zulu.org', '2025-01-08 11:45:00', '2025-03-19 10:10:00', false),
+      ('annab', 'anna@bell.com', '2025-02-12 16:20:00', '2025-03-26 11:55:00', true),
+      ('chrisc', 'chris@cake.net', '2025-01-18 08:10:00', '2025-03-23 14:30:00', true),
+      ('karenw', 'karen@wind.com', '2025-02-18 13:25:00', '2025-03-25 09:15:00', false),
+      ('stevej', 'steve@jobs.org', '2025-01-22 15:50:00', '2025-03-24 17:40:00', true),
+      ('laurar', 'laura@rain.com', '2025-02-08 10:35:00', '2025-03-26 12:25:00', true),
+      ('mikeb', 'mike@bike.net', '2025-01-12 12:15:00', '2025-03-21 15:10:00', true),
+      ('jennyf', 'jenny@flower.com', '2025-02-22 14:40:00', '2025-03-25 10:50:00', true),
+      ('samuelj', 'sam@jackson.net', '2025-01-03 13:10:00', '2025-03-26 14:00:00', true),
+      ('oliviat', 'olivia@tree.com', '2025-02-28 11:50:00', '2025-03-25 13:35:00', true),
+      ('henryf', 'henry@ford.org', '2025-01-17 09:25:00', '2025-03-18 16:15:00', false),
+      ('sophiap', 'sophia@pearl.com', '2025-02-14 15:40:00', '2025-03-26 07:30:00', true),
+      ('williamg', 'will@gates.net', '2025-01-27 10:15:00', '2025-03-24 11:45:00', true),
+      ('claireb', 'claire@beach.uk', '2025-02-03 14:20:00', '2025-03-23 09:55:00', true),
+      ('ethanm', 'ethan@mountain.com', '2025-01-31 16:35:00', '2025-03-20 12:25:00', false),
+      ('natalier', 'natalie@river.net', '2025-02-17 08:45:00', '2025-03-26 15:10:00', true),
+      ('lukes', 'luke@sky.org', '2025-01-09 12:30:00', '2025-03-22 14:50:00', true),
+      ('victoriah', 'victoria@hill.com', '2025-02-23 13:15:00', '2025-03-25 08:20:00', true),
+      ('jacobw', 'jacob@wave.net', '2025-01-14 11:00:00', '2025-03-19 17:30:00', false),
+      ('isabellam', 'isabella@mist.com', '2025-02-07 09:40:00', '2025-03-26 10:50:00', true),
+      ('noahc', 'noah@cloud.org', '2025-01-23 15:25:00', '2025-03-24 16:10:00', true),
+      ('ameliaf', 'amelia@forest.com', '2025-02-19 12:55:00', '2025-03-25 14:45:00', true),
+      ('benjaminr', 'ben@ridge.net', '2025-01-06 14:10:00', '2025-03-21 11:20:00', true),
+      ('harperp', 'harper@plain.com', '2025-02-26 10:25:00', '2025-03-26 13:30:00', true),
+      ('elijahs', 'elijah@stone.uk', '2025-01-19 08:50:00', '2025-03-23 12:40:00', false),
+      ('charlottek', 'charlotte@knight.com', '2025-02-11 16:45:00', '2025-03-25 15:55:00', true),
+      ('owenl', 'owen@lake.org', '2025-01-28 13:35:00', '2025-03-24 10:30:00', true),
+      ('miag', 'mia@garden.net', '2025-02-04 11:10:00', '2025-03-26 09:05:00', true);"
   - psql -d test -U postgres -c "SELECT username, email, created_at, last_login, is_active, AGE(created_at) as account_age, EXTRACT(DAY FROM (CURRENT_TIMESTAMP - last_login)) as days_since_login FROM users WHERE created_at > '2025-01-01' ORDER BY last_login DESC;"
   - chmod +x psql_stats.sh
   - ./psql_stats.sh
