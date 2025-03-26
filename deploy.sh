@@ -46,7 +46,7 @@ rm -f "deployment_artifact.tar.gz"
 log "${GREEN}Cleanup completed${RESET}"
 
 log "${GREEN}Deployment completed successfully!${RESET}"
-log "Deployment target: nowhere"
+log "Deployment target: s3.dot.gov/*"
 log "${GREEN}Deployment status: SUCCESS${RESET}"
 
 echo -e "${GREEN}Done. Your build exited with 0.${RESET}"
