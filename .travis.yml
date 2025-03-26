@@ -1,3 +1,12 @@
 dist: noble
 script: uname -r 
-install: skip 
+install: skip
+services:
+  - postgresql
+
+before_script:
+  - psql -c 'CREATE DATABASE test;' -U postgres
+  - psql -c "SELECT version();" -U postgres
+
+addons:
+  postgresql: "16"
