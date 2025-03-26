@@ -1,18 +1,64 @@
 dist: noble
+os: linux
+
+env:
+  global:
+    - PGUSER=postgres
+    - PGDATABASE=test
+    - PGHOST=localhost
+    - TEST_ENV=travis
+  matrix:
+    - POSTGRES_VERSION=16
+    - POSTGRES_VERSION=15
+
+language: bash
+
+cache:
+  directories:
+    - $HOME/.cache
+
+install:
+  - sudo apt-get update
+  - sudo apt-get install -y postgresql-client jq
+
+services:
+  - postgresql
+
+addons:
+  postgresql: "$POSTGRES_VERSION"
+  apt:
+    packages:
+      - postgresql-$POSTGRES_VERSION
+      - shellcheck
+
+before_install:
+  - echo "Starting setup for PostgreSQL $POSTGRES_VERSION"
+  - sudo service postgresql stop
+  - sudo service postgresql start $POSTGRES_VERSION
+
+before_script:
+  - psql -c "ALTER USER postgres WITH PASSWORD 'postgres';" -U postgres
+  - psql -c 'CREATE DATABASE test;' -U postgres
+  - psql -c "SELECT version();" -U postgres
+  - echo "Database setup completed"
+
 script:
   - uname -r
   - psql -d test -U postgres -c "CREATE TABLE users (
-      id SERIAL PRIMARY KEY, 
-      username VARCHAR(50) NOT NULL UNIQUE, 
-      email VARCHAR(255) NOT NULL, 
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
-      last_login TIMESTAMP, 
-      is_active BOOLEAN DEFAULT true, 
-      login_count INT DEFAULT 0, 
-      last_ip INET, 
-      role VARCHAR(20) DEFAULT 'user' CHECK (role IN ('user', 'admin', 'moderator'))
+      id SERIAL PRIMARY KEY,
+      username VARCHAR(50) NOT NULL UNIQUE,
+      email VARCHAR(255) NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      last_login TIMESTAMP,
+      is_active BOOLEAN DEFAULT true,
+      login_count INT DEFAULT 0,
+      last_ip INET,
+      role VARCHAR(20) DEFAULT 'user' CHECK (role IN ('user', 'admin', 'moderator')),
+      failed_attempts INT DEFAULT 0,
+      locked_until TIMESTAMP,
+      preferences JSONB DEFAULT '{}'
     );"
-  - psql -d test -U postgres -c "INSERT INTO users (username, email, created_at, last_login, is_active, login_count, last_ip, role) VALUES 
+  - psql -d test -U postgres -c "INSERT INTO users (username, email, created_at, last_login, is_active, login_count, last_ip, role) VALUES
       ('johndoe', 'john@example.com', '2025-01-15 10:30:00', '2025-03-25 14:20:00', true, 42, '192.168.1.10', 'user'),
       ('janedoe', 'jane@example.com', '2025-02-01 09:15:00', '2025-03-26 08:45:00', true, 58, '10.0.0.15', 'admin'),
       ('bobsmith', 'bob@example.com', '2025-01-20 14:45:00', '2025-03-20 16:30:00', false, 19, '172.16.254.1', 'user'),
@@ -93,39 +139,65 @@ script:
       ('lucasp', 'lucas@peak.net', '2025-02-08 09:35:00', '2025-03-24 13:10:00', true, 40, '142.251.32.250', 'user'),
       ('averym', 'avery@mist.com', '2025-01-14 11:55:00', '2025-03-20 14:25:00', false, 23, '173.194.67.250', 'user'),
       ('scarlettw', 'scarlett@woods.org', '2025-02-27 15:20:00', '2025-03-26 14:50:00', true, 56, '216.58.194.250', 'admin');"
-  - psql -d test -U postgres -c "SELECT username, email, created_at, last_login, is_active, login_count, last_ip, role, 
-      AGE(created_at) as account_age, 
-      EXTRACT(DAY FROM (CURRENT_TIMESTAMP - last_login)) as days_since_login 
-      FROM users 
-      WHERE created_at > '2025-01-01' 
-      ORDER BY last_login DESC 
+  - psql -d test -U postgres -c "CREATE INDEX idx_users_last_login ON users(last_login);"
+  - psql -d test -U postgres -c "CREATE INDEX idx_users_role ON users(role);"
+  - psql -d test -U postgres -c "SELECT username, email, created_at, last_login, is_active, login_count, last_ip, role,
+      AGE(created_at) as account_age,
+      EXTRACT(DAY FROM (CURRENT_TIMESTAMP - last_login)) as days_since_login
+      FROM users
+      WHERE created_at > '2025-01-01'
+      ORDER BY last_login DESC
       LIMIT 10;"
-  - psql -d test -U postgres -c "SELECT role, COUNT(*) as role_count, 
-      AVG(login_count) as avg_logins, 
-      SUM(CASE WHEN is_active THEN 1 ELSE 0 END) as active_users 
-      FROM users 
-      GROUP BY role 
+  - psql -d test -U postgres -c "SELECT role, COUNT(*) as role_count,
+      AVG(login_count) as avg_logins,
+      SUM(CASE WHEN is_active THEN 1 ELSE 0 END) as active_users
+      FROM users
+      GROUP BY role
       ORDER BY role_count DESC;"
-  - psql -d test -U postgres -c "UPDATE users 
-      SET login_count = login_count + 1, 
-          last_login = CURRENT_TIMESTAMP, 
-          last_ip = '127.0.0.1' 
-      WHERE username = 'johndoe';"
-  - psql -d test -U postgres -c "SELECT username, email, login_count, last_ip, 
-      EXTRACT(HOUR FROM (CURRENT_TIMESTAMP - last_login)) as hours_since_login 
-      FROM users 
-      WHERE login_count > 40 AND is_active = true 
+  - psql -d test -U postgres -c "SELECT 
+      EXTRACT(HOUR FROM last_login) as login_hour,
+      COUNT(*) as login_count
+      FROM users
+      WHERE last_login IS NOT NULL
+      GROUP BY login_hour
+      ORDER BY login_hour;"
+  - psql -d test -U postgres -c "CREATE VIEW active_admins AS
+      SELECT username, email, login_count
+      FROM users
+      WHERE role = 'admin' AND is_active = true;"
+  - psql -d test -U postgres -c "BEGIN;
+      UPDATE users 
+      SET login_count = login_count + 1,
+          last_login = CURRENT_TIMESTAMP,
+          last_ip = '127.0.0.1'
+      WHERE username = 'johndoe';
+      SELECT * FROM users WHERE username = 'johndoe';
+      COMMIT;"
+  - psql -d test -U postgres -c "SELECT username, email, login_count, last_ip,
+      EXTRACT(HOUR FROM (CURRENT_TIMESTAMP - last_login)) as hours_since_login
+      FROM users
+      WHERE login_count > 40 AND is_active = true
       ORDER BY login_count DESC;"
+  - shellcheck psql_stats.sh
   - chmod +x psql_stats.sh
   - ./psql_stats.sh
-install: skip
-services:
-  - postgresql
-before_script:
-  - psql -c 'CREATE DATABASE test;' -U postgres
-  - psql -c "SELECT version();" -U postgres
-addons:
-  postgresql: "16"
+  - psql -d test -U postgres -c "\copy (SELECT * FROM users) TO 'users_export.csv' WITH CSV HEADER"
+  - chmod +x deploy.sh
 
+after_success:
+  - echo "Tests completed successfully"
+  - cat users_export.csv
+
+after_failure:
+  - echo "Tests failed"
+  - psql -d test -U postgres -c "SELECT * FROM pg_stat_activity WHERE datname = 'test';"
+  
 files:
   - psql_stats.sh
+  - deploy.sh
+
+deploy:
+  provider: script
+  script: bash deploy.sh
+  on:
+    branch: main
