@@ -1,12 +1,14 @@
 dist: noble
-script: uname -r 
+script: 
+  - uname -r
+  - psql -d test -U postgres -c "CREATE TABLE users (id SERIAL PRIMARY KEY, username VARCHAR(50) NOT NULL UNIQUE, email VARCHAR(255) NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);"
+  - psql -d test -U postgres -c "INSERT INTO users (username, email) VALUES ('johndoe', 'john@example.com'), ('janedoe', 'jane@example.com'), ('bobsmith', 'bob@example.com');"
+  - psql -d test -U postgres -c "SELECT username, email, created_at, AGE(created_at) as account_age FROM users WHERE created_at > '2025-01-01' ORDER BY created_at DESC;"
 install: skip
 services:
   - postgresql
-
 before_script:
   - psql -c 'CREATE DATABASE test;' -U postgres
   - psql -c "SELECT version();" -U postgres
-
 addons:
   postgresql: "16"
