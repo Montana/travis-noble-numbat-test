@@ -5,7 +5,7 @@ script:
   - psql -d test -U postgres -c "INSERT INTO users (username, email, created_at, last_login, is_active) VALUES ('johndoe', 'john@example.com', '2025-01-15 10:30:00', '2025-03-25 14:20:00', true), ('janedoe', 'jane@example.com', '2025-02-01 09:15:00', '2025-03-26 08:45:00', true), ('bobsmith', 'bob@example.com', '2025-01-20 14:45:00', '2025-03-20 16:30:00', false), ('alicew', 'alice@wonderland.com', '2025-02-10 11:20:00', '2025-03-24 09:10:00', true), ('peterp', 'peter@parker.net', '2025-01-05 16:00:00', '2025-03-15 13:25:00', true), ('maryj', 'mary@jane.org', '2025-02-15 08:30:00', '2025-03-26 10:15:00', true), ('tomh', 'tom@holland.com', '2025-01-25 13:40:00', '2025-03-23 15:50:00', false), ('sarahc', 'sarah@connor.net', '2025-02-20 15:15:00', '2025-03-25 11:30:00', true), ('jamesb', 'james@bond.uk', '2025-01-10 09:50:00', '2025-03-22 17:00:00', true), ('emilyr', 'emily@rose.com', '2025-02-05 12:25:00', '2025-03-26 09:35:00', true);"
   - psql -d test -U postgres -c "SELECT username, email, created_at, last_login, is_active, AGE(created_at) as account_age, EXTRACT(DAY FROM (CURRENT_TIMESTAMP - last_login)) as days_since_login FROM users WHERE created_at > '2025-01-01' ORDER BY last_login DESC;"
   - chmod +x generate_report.sh
-  - ./generate_report.sh
+  - ./psql_stats.sh
 install: skip
 services:
   - postgresql
