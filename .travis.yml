@@ -42,7 +42,27 @@ script:
       ('elijahs', 'elijah@stone.uk', '2025-01-19 08:50:00', '2025-03-23 12:40:00', false),
       ('charlottek', 'charlotte@knight.com', '2025-02-11 16:45:00', '2025-03-25 15:55:00', true),
       ('owenl', 'owen@lake.org', '2025-01-28 13:35:00', '2025-03-24 10:30:00', true),
-      ('miag', 'mia@garden.net', '2025-02-04 11:10:00', '2025-03-26 09:05:00', true);"
+      ('miag', 'mia@garden.net', '2025-02-04 11:10:00', '2025-03-26 09:05:00', true),
+      ('gregoryt', 'greg@thunder.com', '2025-01-02 15:45:00', '2025-03-25 12:15:00', true),
+      ('rachels', 'rachel@star.net', '2025-02-13 14:10:00', '2025-03-26 11:20:00', true),
+      ('danielp', 'dan@peak.org', '2025-01-16 09:55:00', '2025-03-20 13:40:00', false),
+      ('evad', 'eva@dawn.com', '2025-02-21 12:30:00', '2025-03-25 16:10:00', true),
+      ('matthewl', 'matt@light.uk', '2025-01-29 11:25:00', '2025-03-24 14:55:00', true),
+      ('zoeyc', 'zoey@canyon.net', '2025-02-06 13:50:00', '2025-03-26 08:15:00', true),
+      ('jacksonm', 'jack@meadow.com', '2025-01-11 16:20:00', '2025-03-22 10:35:00', false),
+      ('lilyb', 'lily@breeze.org', '2025-02-24 09:15:00', '2025-03-25 13:00:00', true),
+      ('tylerh', 'tyler@horizon.com', '2025-01-24 14:40:00', '2025-03-23 17:25:00', true),
+      ('avaw', 'ava@woods.net', '2025-02-16 10:50:00', '2025-03-26 12:45:00', true),
+      ('ryank', 'ryan@key.uk', '2025-01-07 12:05:00', '2025-03-21 09:30:00', false),
+      ('scarlettf', 'scarlett@flame.com', '2025-02-09 15:35:00', '2025-03-25 11:10:00', true),
+      ('gabriels', 'gabe@sun.net', '2025-01-21 13:15:00', '2025-03-24 15:20:00', true),
+      ('hannahm', 'hannah@maple.org', '2025-02-27 11:40:00', '2025-03-26 14:25:00', true),
+      ('calebj', 'caleb@jungle.com', '2025-01-04 10:25:00', '2025-03-19 12:50:00', false),
+      ('ellieg', 'ellie@glow.net', '2025-02-02 16:15:00', '2025-03-25 09:45:00', true),
+      ('masonr', 'mason@rock.uk', '2025-01-26 08:30:00', '2025-03-23 13:10:00', true),
+      ('sophiew', 'sophie@wave.com', '2025-02-15 14:55:00', '2025-03-26 10:00:00', true),
+      ('loganb', 'logan@bridge.org', '2025-01-13 11:35:00', '2025-03-20 15:45:00', false),
+      ('abigailt', 'abby@tide.net', '2025-02-20 13:20:00', '2025-03-25 17:00:00', true);"
   - psql -d test -U postgres -c "SELECT username, email, created_at, last_login, is_active, AGE(created_at) as account_age, EXTRACT(DAY FROM (CURRENT_TIMESTAMP - last_login)) as days_since_login FROM users WHERE created_at > '2025-01-01' ORDER BY last_login DESC;"
   - chmod +x psql_stats.sh
   - ./psql_stats.sh
