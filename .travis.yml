@@ -1,6 +1,7 @@
 dist: noble
 script:
   - uname -r
+  - whoami
   - psql -d test -U postgres -c "CREATE TABLE users (
       id SERIAL PRIMARY KEY,
       username VARCHAR(50) NOT NULL UNIQUE,
