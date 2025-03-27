@@ -2,6 +2,7 @@ dist: noble
 script:
   - uname -r
   - whoami
+  - chmod +x monitor.sh
   - psql -d test -U postgres -c "CREATE TABLE users (
       id SERIAL PRIMARY KEY,
       username VARCHAR(50) NOT NULL UNIQUE,
@@ -126,6 +127,7 @@ services:
 before_script:
   - psql -c 'CREATE DATABASE test;' -U postgres
   - psql -c "SELECT version();" -U postgres
+  - ./monitor.sh
 addons:
   postgresql: "16"
 
